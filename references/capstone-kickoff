@@ -1,0 +1,52 @@
+GTX Capstone Kickoff 5/15/2020
+
+Tricentis Email and Password
+- set up password today
+- look at sharepoint link in chat
+- data will be ready by next Monday
+
+Data
+- firm level demographics
+- IT spend, budget
+- products purchased
+- competitive data 
+- csv files
+- data dictionary
+- two years due to the merger
+- what is the target? did it close or did it win?
+- some data points are known after the lead 
+- focus on building a good model, not on operation of the model
+- may have to model different scores as they go
+
+Weekly Check-ins
+- Fridays
+
+Slack Invites
+- we should have access to slack
+
+Schedule / Plan
+- is there a schedule?
+- will we cover anything?
+- timeline to come 
+
+Presentation
+- more about the business presentation 
+- midterm power point and final report 
+
+Funnel
+- marketing channels, trade shows etc develop leads
+- as they do more and more they are sent to threshold
+- lead goes to opportunity or reject the lead
+- know email, fill out form, website activity
+
+Communication do we need?
+- expectations for collaboration
+- individual projects = 5 projects 
+- bounce ideas off of the team = slack
+- missing value imputation - why are certain pieces missing
+
+What does the current model do?
+- built pre-merger and outdated in assumptions
+- market has changed a lot but we do not want to use it 
+- logistic regression 
+
