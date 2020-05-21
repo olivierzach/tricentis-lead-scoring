@@ -9,7 +9,7 @@ def source_account_data(
     pickle_name="./data/pickles/account_data.pkl"
     ):
 
-    df = pd.read_csv(file_name)
+    df = pd.read_csv(file_name, engine='python')
     df.to_pickle(pickle_name)
 
 
@@ -18,7 +18,7 @@ def source_opportunities_data(
     pickle_name="./data/pickles/opportunities_data.pkl"
     ):
 
-    df = pd.read_csv(file_name)
+    df = pd.read_csv(file_name, engine='python')
     df.to_pickle(pickle_name)
 
 
@@ -27,7 +27,7 @@ def source_leads_data(
     pickle_name="./data/pickles/leads_data.pkl"
     ):
 
-    df = pd.read_csv(file_name)
+    df = pd.read_csv(file_name, engine='python')
     df.to_pickle(pickle_name)
 
 
@@ -36,7 +36,7 @@ def source_touchpoints_data(
     pickle_name="./data/pickles/touchpoints_data.pkl"
     ):
 
-    df = pd.read_csv(file_name)
+    df = pd.read_csv(file_name, engine='python')
     df.to_pickle(pickle_name)
 
 
@@ -45,7 +45,7 @@ def source_hgi_data(
     pickle_name="./data/pickles/hgi_data.pkl"
     ):
 
-    df = pd.read_csv(file_name)
+    df = pd.read_csv(file_name, engine='python')
     df.to_pickle(pickle_name)
 
 
@@ -53,6 +53,6 @@ def source_discover_org_data(
     file_name="./data/source/DiscoverOrg_data.csv",
     pickle_name="./data/pickles/discover_org_data.pkl"
     ):
-    
-    df = pd.read_csv(file_name)
+
+    df = pd.read_csv(file_name, engine='python')
     df.to_pickle(pickle_name)
