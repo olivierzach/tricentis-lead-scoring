@@ -1,5 +1,7 @@
 from data.data_util import *
 
+# TODO: which leads should we filter to? prospect, customer, unknown?
+
 
 def profile_leads_data(df):
 

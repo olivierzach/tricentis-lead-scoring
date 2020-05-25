@@ -8,6 +8,7 @@ df = pd.read_csv("./data/source/Touchpoints_data.csv", engine='python')
 # TODO: use the leads table to find the censoring date for all path features
 # TODO: put this in a function
 # TODO: profile the join to leads data, make sure to account for leads with missing connections
+# TODO: can we get timestamp for page and content activity?
 
 # drop the ignore columns
 drop_cols = [
