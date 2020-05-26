@@ -1,0 +1,12 @@
+capstone meeeting: 5/26/2020
+
+- flags, passed to sales, accepted by sales 
+- which account types should we use? prospect, customer, churned customer
+- how do we ensure web activity to be before passed to sales flag?
+- goal is to optimize: opportunities modeling, win conversion, web traffic / channel analysis
+- double check on github to see what can we share
+- slack channel: still in the works, check for inviteson tricentis email address
+- filter data touch points has a date, and leads table has a date = use this to filter to the touch points data
+- account type: use all of this in for testing 
+- is leads data table filled in before opportunity date?
+- HGI: any lead that has provided data - use this for feature engineering
