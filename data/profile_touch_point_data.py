@@ -3,6 +3,7 @@ from data.data_util import *
 df = pd.read_csv("./data/source/Touchpoints_data.csv", engine='python')
 
 # TODO: content url base features
+# TODO: how best to encode content without making model too frail
 # TODO: group by and sum the base features by email to join to leads table
 # TODO: join in the web page, channel, and content path features
 # TODO: use the leads table to find the censoring date for all path features
@@ -28,6 +29,13 @@ drop_cols = [
     'co_code'
 ]
 df.drop(drop_cols, axis=1, inplace=True)
+
+# strip all columns
+for i in df.columns:
+    try:
+        df[i] = df[i].apply(lambda x: x.strip())
+    except Exception as e:
+        print(e)
 
 # convert touch point date
 df['TOUCHPOINT_DATE'] = pd.to_datetime(df['TOUCHPOINT_DATE'])
@@ -161,30 +169,51 @@ df['action_flag_na'] = np.where(
     0
 )
 
-# define the url path parameters
+# if previous page null, fill in with current url
+df['PREVIOUS_PAGE'] = np.where(
+    (df['PREVIOUS_PAGE'].isnull()) | (df['PREVIOUS_PAGE'] is not None) | (df['PREVIOUS_PAGE'] == 'None'),
+    df['url'],
+    df['PREVIOUS_PAGE']
+)
+
+# define the url path parameters = themes of the touch point without getting too granular
 path_cols = ['EMAIL_ADDRESS', 'ACTIVITY_ORDER', 'PREVIOUS_PAGE']
 col_title = 'url'
 keywords = [
-    'google',
-    'facebook',
-    'bing',
-    'linkedin',
-    'sap',
-    'events',
     'academy',
-    'connect',
-    'resource',
-    'products',
-    'demo',
-    'blog',
     'accelerate',
-    'article',
-    'csod',
     'agenda',
-    'contact',
+    'article',
+    'become',
+    'bing',
+    'blog',
+    'book',
     'community',
+    'compare',
+    'connect',
+    'contact',
+    'csod',
+    'customer-experience',
+    'demo',
     'enterprise',
-    'https://www.tricentis.com/'
+    'events',
+    'facebook',
+    'google',
+    'humana',
+    'https://www.tricentis.com/',
+    'integrations',
+    'linkedin',
+    'locations',
+    'partner',
+    'portal',
+    'products',
+    'resource',
+    'sap',
+    'solutions',
+    'routenamelearning',
+    'tosca',
+    'qasymphony',
+    'qtestnet'
 ]
 
 
@@ -193,33 +222,49 @@ df_url_path = get_path_features(
     path_cols=path_cols,
     keywords=keywords,
     df=df,
-    col_title=col_title
+    col_title=col_title,
+    path_length=9
 )
 
-# define the content path parameters
+
+# define the content path parameters = themes of the content without getting too granular
 path_cols = ['EMAIL_ADDRESS', 'CONTENT_ORDER', 'final_title']
 col_title = 'content'
 keywords = [
+    'testing',
     'accelerate',
-    'forrester',
-    'paper',
-    'sap',
-    'agile',
-    'devops',
-    'test',
-    'gartner',
-    'web',
     'automation',
-    'report',
-    'qa',
-    'roadshow',
-    'ai'
+    'sap',
+    'software',
+    'devops',
+    'agile',
     'quality',
-    'rpa',
-    'demo',
+    'continous',
+    'tricentis',
     'transformation',
+    'qa',
+    'digital',
     'management',
-    'book'
+    'future',
+    'research',
+    'success',
+    'business',
+    'roadshow',
+    'ai',
+    'tosca',
+    'warehouse',
+    'forrester',
+    'challenges',
+    'gartner',
+    'webinar',
+    'migration',
+    'enterprise',
+    'code',
+    'virtualization',
+    'suite',
+    'risk',
+    'book',
+    'paper'
 ]
 
 # get the pivoted content path to join to original frame
@@ -227,5 +272,128 @@ df_content_path = get_path_features(
     path_cols=path_cols,
     keywords=keywords,
     df=df,
-    col_title=col_title
+    col_title=col_title,
+    path_length=9
 )
+
+# if previous channel null, fill in with current channel
+df['PREVIOUS_CHANNEL'] = np.where(
+    (df['PREVIOUS_CHANNEL'].isnull()) | (df['PREVIOUS_CHANNEL'] is not None) | (df['PREVIOUS_CHANNEL'] == 'None'),
+    df['CHANNEL'],
+    df['PREVIOUS_CHANNEL']
+)
+
+# define the content path parameters = themes of the content without getting too granular
+path_cols = ['EMAIL_ADDRESS', 'CONTENT_ORDER', 'PREVIOUS_CHANNEL']
+col_title = 'content'
+keywords = [
+    'website',
+    'content syndication',
+    'direct mail',
+    'tradeshow',
+    'webinar syndication',
+    'house list',
+    'search',
+    'event field',
+    'ppc',
+    'webinar organic',
+    'direct website',
+    'inbound email',
+    'customer event',
+    'inbound phone',
+    'organic website',
+    'social paid',
+    'seo',
+    'event virtual',
+    'qualityjam'
+]
+
+# get the pivoted content path to join to original frame
+df_channel_path = get_path_features(
+    path_cols=path_cols,
+    keywords=keywords,
+    df=df,
+    col_title=col_title,
+    path_length=9
+)
+
+# time based features
+time_cols = ['EMAIL_ADDRESS', 'TOUCHPOINT_DATE']
+df_time = df[time_cols]
+
+# different touch point date by email = time between events
+df_time['time_diff'] = df_time.sort_values(time_cols)\
+    .groupby('EMAIL_ADDRESS')['TOUCHPOINT_DATE']\
+    .diff()
+
+# result is a time delta object that we can convert to days
+df_time['time_diff'] = df_time['time_diff'].apply(lambda x: x.total_seconds() / (60*60*24))
+
+# roll up to one row per email, grabbing time based features on the way
+df_time = df_time.groupby('EMAIL_ADDRESS').agg(['mean', 'std', 'sum', 'count'])
+df_time = clean_multi_index_headers(df_time)
+df_time.reset_index(inplace=True)
+
+
+for i in df.columns:
+    print(df[i].value_counts())
+
+# content attribute features - dummy out the content flag
+content_type_cols = ['EMAIL_ADDRESS', 'content_type_tag']
+df_content_type = dummy_wrapper(df[content_type_cols], cols_to_dummy='content_type_tag')
+
+# very sparse categories - need to bin into larger buckets
+# accelerate group
+df_content_type['content_type_accelerate'] = (
+    df_content_type['accelerate_on_demand'] + df_content_type['accelerator']
+)
+
+# video group
+df_content_type['content_type_video'] = (
+    df_content_type['video'] +
+    df_content_type['demo_video']
+)
+
+# live content
+df_content_type['content_type_live'] = (
+    df_content_type['event'] +
+    df_content_type['webinar']
+)
+
+# static content
+df_content_type['content_type_static'] = (
+    df_content_type['book'] +
+    df_content_type['ebook'] +
+    df_content_type['paper'] +
+    df_content_type['white_paper'] +
+    df_content_type['guides__insights']
+)
+
+# awareness content it typically read or learn more materials about the problem business solves
+df_content_type['content_type_awareness'] = (
+    df_content_type['book'] +
+    df_content_type['event'] +
+    df_content_type['paper'] +
+    df_content_type['guides__insights'] +
+    df_content_type['ebook'] +
+    df_content_type['white_paper']
+)
+
+# acquisition content is geared towards features and selling the product
+df_content_type['content_type_acquisition'] = (
+    df_content_type['accelerate_on_demand'] +
+    df_content_type['accelerator'] +
+    df_content_type['demo_video'] +
+    df_content_type['video'] +
+    df_content_type['webinar'] +
+    df_content_type['analyst_research']
+)
+
+# group by mean to not leak total counts into path variables
+df_content_type = df_content_type.groupby('EMAIL_ADDRESS').mean()
+
+
+
+
+
+
