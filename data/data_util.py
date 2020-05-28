@@ -225,9 +225,9 @@ def is_valid_email(email=None):
     return is_valid
 
 
-def get_path_features(path_cols, keywords, df, col_title):
+def get_path_features(path_cols, keywords, df, col_title, path_length):
     df_path = df[path_cols]
-    df_path = df_path[df_path[path_cols[1]] <= 10]
+    df_path = df_path[df_path[path_cols[1]] <= path_length]
 
     # pivot the url path
     df_path = df_path.pivot_table(
@@ -277,3 +277,22 @@ def get_path_features(path_cols, keywords, df, col_title):
     df_path.drop(slot_columns, axis=1, inplace=True)
 
     return df_path
+
+
+def get_stop_words():
+
+    stop_words_list = stop_words = [
+        "i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your", "yours", "yourself",
+        "yourselves", "he", "him", "his", "himself", "she", "her", "hers", "herself", "it", "its",
+        "itself", "they", "them", "their", "theirs", "themselves", "what", "which", "who", "whom",
+        "this", "that", "these", "those", "am", "is", "are", "was", "were", "be", "been", "being", "have",
+        "has", "had", "having", "do", "does", "did", "doing", "a", "an", "the", "and", "but", "if", "or",
+        "because", "as", "until", "while", "of", "at", "by", "for", "with", "about", "against", "between",
+        "into", "through", "during", "before", "after", "above", "below", "to", "from", "up", "down", "in",
+        "out", "on", "off", "over", "under", "again", "further", "then", "once", "here", "there", "when",
+        "where", "why", "how", "all", "any", "both", "each", "few", "more", "most", "other", "some", "such",
+        "no", "nor", "not", "only", "own", "same", "so", "than", "too", "very", "s", "t", "can", "will",
+        "just", "don", "should", "now"
+    ]
+
+    return stop_words_list
