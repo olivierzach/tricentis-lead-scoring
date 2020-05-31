@@ -1,6 +1,5 @@
 from data.data_util import *
-
-# TODO: which leads should we filter to? prospect, customer, unknown?
+pd.options.mode.chained_assignment = None
 
 
 def profile_leads_data(df):
@@ -8,6 +7,17 @@ def profile_leads_data(df):
     # filter out the different lead types - only want wins, prospects, unknown
     keep_account_types = ['Prospect', 'Customer', 'Unknown']
     df = df[df.account_type.isin(keep_account_types)]
+
+    # find the opportunity date to filter out touch point records later
+    # we need to touch points before the opportunity date
+    keep_cols = ['email', 'opportunity_created_date']
+    df_censor = df[keep_cols]
+
+    # convert dates to enable filtering of touch point data
+    df_censor['opportunity_created_date'] = pd.to_datetime(df_censor['opportunity_created_date'])
+
+    # drop rows without an opportunity date
+    df_censor.dropna(inplace=True)
 
     # group countries by distribution of appearance on leads
     keep_countries = [
@@ -23,7 +33,7 @@ def profile_leads_data(df):
         'singapore',
         'sweden',
         'philippines',
-        'france' ,
+        'france',
         'brazil',
         'poland',
         'new zealand',
@@ -341,5 +351,4 @@ def profile_leads_data(df):
     ]
     df.set_index(idx_cols, inplace=True)
 
-    return df
-
+    return df, df_censor
