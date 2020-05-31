@@ -296,3 +296,16 @@ def get_stop_words():
     ]
 
     return stop_words_list
+
+
+def clean_string(s):
+
+    s = s.lower(). \
+        replace('/', ''). \
+        replace('(', ''). \
+        replace(')', ''). \
+        replace('-', ''). \
+        replace(' ', '_'). \
+        replace('3', 'three')
+
+    return s

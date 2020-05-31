@@ -2,6 +2,7 @@ import pandas as pd
 from data.profile_leads_data import *
 from data.profile_touch_point_data import *
 from data.profile_hgi_data import *
+from data.profile_discover_org_data import *
 
 # TODO: complete the profile of the touch points data
 # TODO: source these in a build script and join components together
@@ -50,4 +51,10 @@ def source_discover_org_data(
 ):
 
     df = pd.read_csv(file_name, engine='python')
+    df = profile_discover_org_data(df)
     df.to_pickle(pickle_name)
+
+    return df
+
+
+df = source_discover_org_data()
