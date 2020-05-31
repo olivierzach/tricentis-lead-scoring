@@ -85,4 +85,21 @@ def profile_discover_org_data(df):
     current_year = 2020
     df['company_age'] = current_year - df['year_founded']
 
+    # drop columns that we do not need for modeling
+    drop_cols = [
+        'company_website',
+        'company_hq_phone',
+        'company_description',
+        'company_secondary_industries',
+        'year_founded',
+        'hq_address_1',
+        'hq_address_2',
+        'hq_city',
+        'hq_state',
+        'hq_postal_code',
+        'hq_county',
+        'hq_country'
+    ]
+    df.drop(drop_cols, axis=1, inplace=True)
+
     return df
