@@ -11,7 +11,7 @@ def profile_discover_org_data(df):
     df.columns = [clean_string(c) for c in df.columns]
 
     # available categorical columns to dummy
-    dummy_cols = [
+    impute_cols = [
         'company_primary_industry',
         'company_it_budget_mil',
         'company_fi_budget_mil',
@@ -50,18 +50,20 @@ def profile_discover_org_data(df):
     ]
 
     # clean the categorical columns
-    for i in dummy_cols:
+    for i in impute_cols:
         try:
             df[i] = clean_categorical(df[i])
         except Exception as e:
             print(i, e)
 
-    for i in dummy_cols:
+    # put the count of times appeared in dataset as the imputation for each category
+    global_map_dict = {}
+    for i in impute_cols:
         map_dict = df[i].value_counts().to_dict()
-
         df[i] = df[i].map(map_dict)
+        global_map_dict[i] = map_dict
 
-    for i in dummy_cols:
+    for i in impute_cols:
 
         # develop a missing column flag
         df[i + '_missing_flag'] = np.where(
@@ -102,4 +104,4 @@ def profile_discover_org_data(df):
     ]
     df.drop(drop_cols, axis=1, inplace=True)
 
-    return df
+    return df, global_map_dict
