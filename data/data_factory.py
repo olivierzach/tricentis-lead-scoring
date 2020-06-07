@@ -1,10 +1,10 @@
-import pandas as pd
 from data.profile_leads_data import *
 from data.profile_touch_point_data import *
 from data.profile_hgi_data import *
 from data.profile_discover_org_data import *
+from data.profile_target_data import *
+import pickle
 
-# TODO: complete the profile of the touch points data
 # TODO: source these in a build script and join components together
 
 
@@ -51,10 +51,22 @@ def source_discover_org_data(
 ):
 
     df = pd.read_csv(file_name, engine='python')
-    df = profile_discover_org_data(df)
+    df, global_map_dict = profile_discover_org_data(df)
+    df.to_pickle(pickle_name)
+
+    # pickle the look up imputation dict for high cardinality data
+    with open(pickle_name[:15] + 'discover_map_dict.pkl', 'wb') as handle:
+        pickle.dump(global_map_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    return df, global_map_dict
+
+
+def source_model_targets(
+    file_name="./data/source/Leads_data.csv",
+    pickle_name="./data/pickles/target_data.pkl"
+):
+    df = pd.read_csv(file_name, engine='python')
+    df = profile_target_data(df)
     df.to_pickle(pickle_name)
 
     return df
-
-
-df = source_discover_org_data()
