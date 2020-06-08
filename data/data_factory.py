@@ -68,5 +68,3 @@ def source_model_targets(
     df.to_pickle(pickle_name)
 
     return df
-
-source_leads_data()

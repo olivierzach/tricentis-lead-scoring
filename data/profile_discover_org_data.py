@@ -116,7 +116,10 @@ def profile_discover_org_data(df):
         'hq_state',
         'hq_postal_code',
         'hq_county',
-        'hq_country'
+        'hq_country',
+        'hospital_beds',
+        'audit',
+        'technologies_searched'
     ]
     df.drop(drop_cols, axis=1, inplace=True)
 
