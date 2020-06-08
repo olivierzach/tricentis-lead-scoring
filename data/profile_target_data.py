@@ -7,6 +7,7 @@ def profile_target_data(df):
     # select the target columns from the dataset
     keep_cols = [
         'email',
+        'email_domain',
         'passed_to_sales',
         'accepted_by_sales',
         'opportunity_won'

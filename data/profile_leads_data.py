@@ -334,21 +334,19 @@ def profile_leads_data(df):
         'bookings_team',
         'sales_rep_id',
         'applications_being_tested',
-        'opportunity_set_with'
-
-    ]
-    df.drop(drop_cols, axis=1, inplace=True)
-
-    # set index of meta data and keys
-    idx_cols = [
-        'email',
+        'opportunity_set_with',
         'lead_id',
         'opportunity_id',
         'opportunity_created_date',
         'opportunity_close_date',
         'sales_accepted_date',
         'opportunity_won'
+
     ]
-    df.set_index(idx_cols, inplace=True)
+    df.drop(drop_cols, axis=1, inplace=True)
+
+    # group to one row per records
+    group_cols = ['email']
+    df = df.groupby(group_cols).max()
 
     return df, df_censor

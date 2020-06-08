@@ -14,8 +14,6 @@ def profile_touch_point_data(df, df_censor_key):
 
     # convert touch point date
     df['TOUCHPOINT_DATE'] = pd.to_datetime(df['TOUCHPOINT_DATE'])
-    df['touch_point_month'] = df['TOUCHPOINT_DATE'].dt.month
-    df['touch_point_year'] = df['TOUCHPOINT_DATE'].dt.year
 
     # join the the censor key from the leads table
     df = df.merge(
@@ -34,6 +32,22 @@ def profile_touch_point_data(df, df_censor_key):
 
     # filter out censored touch points
     df = df[df['censor_flag'] < 1]
+
+    # time based features
+    keep_cols = ['EMAIL_ADDRESS', 'TOUCHPOINT_DATE']
+    df_time = df[keep_cols]
+
+    # roll up to max and min date by email
+    df_time = df_time.groupby('EMAIL_ADDRESS').agg(['max', 'min'])
+    df_time = clean_multi_index_headers(df_time)
+
+    # time between touch points
+    df_time['touch_point_diff_hours'] = (df_time['TOUCHPOINT_DATE_max'] - df_time['TOUCHPOINT_DATE_min']
+                                         ).dt.seconds / 3600
+
+    # remove the calculation columns
+    drop_cols = ['TOUCHPOINT_DATE_max', 'TOUCHPOINT_DATE_min']
+    df_time.drop(drop_cols, axis=1, inplace=True)
 
     # channel keywords
     feature_keywords = [
@@ -379,7 +393,7 @@ def profile_touch_point_data(df, df_censor_key):
     df_content_type = df_content_type.groupby('EMAIL_ADDRESS').mean()
 
     # combine all features together
-    dfs = [df, df_url_path, df_content_path, df_channel_path, df_content_type]
+    dfs = [df, df_url_path, df_content_path, df_channel_path, df_content_type, df_time]
     df_merged = reduce(
         lambda left, right: pd.merge(left, right, on='EMAIL_ADDRESS', how='inner'),
         dfs
@@ -388,6 +402,7 @@ def profile_touch_point_data(df, df_censor_key):
     # remove all columns that we do not need
     # drop the ignore columns
     drop_cols = [
+        'email',
         'ai',
         'NEXT_CHANNEL',
         'PPC_AD_GROUP',
@@ -481,5 +496,14 @@ def profile_touch_point_data(df, df_censor_key):
         'opportunity_created_date'
     ]
     df_merged.drop(drop_cols, axis=1, inplace=True)
+
+    # remove duplicates
+    df_merged.drop_duplicates(inplace=True)
+
+    # filter out all company emails - likely testing accounts
+    df_merged = df_merged[~df_merged['EMAIL_ADDRESS'].str.contains('tricentis')]
+
+    # roll up to one row per email
+    df_merged = df_merged.groupby('EMAIL_ADDRESS').max()
 
     return df_merged

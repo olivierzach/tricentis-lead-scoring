@@ -104,4 +104,8 @@ def profile_discover_org_data(df):
     ]
     df.drop(drop_cols, axis=1, inplace=True)
 
+    # roll up to one row per record
+    group_cols = ['company_id', 'company_name', 'company_email_domain']
+    df = df.groupby(group_cols).max()
+
     return df, global_map_dict

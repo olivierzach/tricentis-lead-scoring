@@ -5,8 +5,6 @@ from data.profile_discover_org_data import *
 from data.profile_target_data import *
 import pickle
 
-# TODO: source these in a build script and join components together
-
 
 def source_leads_data(
     file_name="./data/source/Leads_data.csv",
