@@ -312,7 +312,6 @@ def profile_leads_data(df):
         'trimeframe',
         'active_project',
         'role',
-        'lead_account_id',
         'lead_title',
         'current_total_score',
         'current_demographic_score',
@@ -345,8 +344,15 @@ def profile_leads_data(df):
     ]
     df.drop(drop_cols, axis=1, inplace=True)
 
+    # fill lead account missing with a placeholder
+    df['lead_account_id'] = np.where(
+        df['lead_account_id'].isnull(),
+        'x'*18,
+        df['lead_account_id']
+    )
+
     # group to one row per records
-    group_cols = ['email']
+    group_cols = ['email', 'lead_account_id']
     df = df.groupby(group_cols).max()
 
     return df, df_censor

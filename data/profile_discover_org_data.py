@@ -87,12 +87,28 @@ def profile_discover_org_data(df):
     current_year = 2020
     df['company_age'] = current_year - df['year_founded']
 
+    # linked in flag
+    df['linkedin_flag'] = np.where(
+        df['company_linkedin_url'].isnull(),
+        0,
+        1
+    )
+
     # drop columns that we do not need for modeling
     drop_cols = [
+        'company_id',
+        'company_name',
         'company_website',
         'company_hq_phone',
         'company_description',
         'company_secondary_industries',
+        'my_notes_on_company',
+        'company_profile_url',
+        'company_linkedin_url',
+        'company_other_names',
+        'company_sic_codes',
+        'company_naics_codes',
+        'fiscal_year_end',
         'year_founded',
         'hq_address_1',
         'hq_address_2',
@@ -104,8 +120,7 @@ def profile_discover_org_data(df):
     ]
     df.drop(drop_cols, axis=1, inplace=True)
 
-    # roll up to one row per record
-    group_cols = ['company_id', 'company_name', 'company_email_domain']
-    df = df.groupby(group_cols).max()
+    # filter out company domains with multiple hits
+    df = df[df.company_email_domain.map(df.company_email_domain.value_counts()) <= 1]
 
     return df, global_map_dict
