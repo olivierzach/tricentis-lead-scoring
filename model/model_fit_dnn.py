@@ -1,7 +1,7 @@
 from data.data_util import *
 from keras import models
 from keras import layers
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import roc_auc_score, precision_score, recall_score, confusion_matrix, classification_report
 from sklearn.model_selection import train_test_split
 
 # grab the complete data set
@@ -20,6 +20,9 @@ idx_cols = [
 ]
 df_model_base.set_index(idx_cols, inplace=True)
 
+# columns that were duplicated after join
+df_model_base.drop('length_of_path_content_y', axis=1, inplace=True)
+
 # sample data for an unbiased look at the model
 df_model = df_model_base.sample(frac=.85)
 
@@ -35,7 +38,7 @@ model_features = variance_threshold(model_features, .05)
 x_train, x_test, y_train, y_test = train_test_split(
     model_features,
     model_target,
-    test_size=.2,
+    test_size=.25,
     shuffle=True,
     stratify=model_target,
     random_state=7651244
@@ -45,20 +48,20 @@ x_train, x_test, y_train, y_test = train_test_split(
 x_train_mean = x_train.mean(axis=0)
 x_train_std = x_train.std(axis=0)
 
-# normalize the training set
-x_train -= x_train_mean
-x_train /= x_train_std
+# find the columns that are dummy variables - we do not want to scale these
+num_cols = [c for c in model_features if not np.isin(model_features[c].dropna().unique(), [-1, 0, 1]).all()]
 
-# apply training normalization on test to avoid leakage
-x_test -= x_train_mean
-x_test /= x_train_std
+# scale the test and training set
+x_train_scaled, x_test_scaled, fit_train = scale_variables(x_train, x_test, scale_cols=num_cols)
 
 # define our model
 model = models.Sequential()
-model.add(layers.Dense(20, activation='relu', input_shape=(x_train.shape[1], ), kernel_initializer='he_uniform'))
-model.add(layers.Dense(15, activation='relu'))
-model.add(layers.Dense(10, activation='relu'))
-model.add(layers.Dense(5, activation='relu'))
+model.add(layers.Dense(10000, activation='relu', input_shape=(x_train.shape[1], ), kernel_initializer='he_uniform'))
+model.add(layers.Dense(2000, activation='relu'))
+model.add(layers.Dense(2000, activation='relu'))
+model.add(layers.Dense(2000, activation='relu'))
+model.add(layers.Dense(2000, activation='relu'))
+model.add(layers.Dense(1000, activation='relu'))
 model.add(layers.Dense(1, activation='sigmoid'))
 
 # choosing a loss function and an optimizer
@@ -70,21 +73,28 @@ model.compile(
 )
 
 # model training
-weights = {0: 1, 1: 99}
+weights = {0: 1, 1: 90}
 fit = model.fit(
-    x_train,
+    x_train_scaled,
     y_train,
     epochs=20,
-    batch_size=100,
+    batch_size=300,
     class_weight=weights
 )
 
 # evaluate model
-y_pred = model.predict(x_train)
-score = roc_auc_score(y_train, y_pred)
+y_pred = model.predict(x_train_scaled)
+roc_score = roc_auc_score(y_train, y_pred)
+recall_score_ = recall_score(y_train, y_pred.round())
+precision_score_ = precision_score(y_train, y_pred.round())
+
 print(f"PREDICTED ACCEPTED: {np.mean(y_pred)}")
-print(f"AUC ROC SCORE: {score}")
+print(f"AUC ROC SCORE: {roc_score}")
+print(f"RECALL SCORE: {recall_score_}")
+print(f"PRECISION SCORE: {precision_score_}")
+print(confusion_matrix(y_train, y_pred.round()))
+print(classification_report(y_train, y_pred.round()))
 
 # save model
-save_path = './data/pickles/model_dnn_sales_accepted'
+save_path = './data/pickles/model_dnn_sales_accepted_1K'
 model.save(save_path)
