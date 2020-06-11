@@ -113,7 +113,7 @@ sns.barplot(
 plt.show()
 
 # save models
-model_names = ['./data/pickles/extra_trees_model.sav']
-model_objects = [forest_c]
+model_names = ['./data/pickles/extra_trees_model.sav', './data/pickles/extra_trees_scaler.sav']
+model_objects = [forest_c, fit_train]
 for i, v in enumerate(model_names):
     joblib.dump(model_objects[i], v)

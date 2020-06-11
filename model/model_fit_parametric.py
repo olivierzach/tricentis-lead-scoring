@@ -163,7 +163,11 @@ plt.xlim(-2.5, 2.5)
 plt.show()
 
 # save models
-model_names = ['./data/pickles/logistic_model.sav', './data/pickles/sgdc_model.sav']
-model_objects = [least_squares, lasso_c]
+model_names = [
+    './data/pickles/logistic_model.sav',
+    './data/pickles/sgdc_model.sav',
+    './data/pickles/parametric_model_scaler.sav'
+]
+model_objects = [least_squares, lasso_c, fit_train]
 for i, v in enumerate(model_names):
     joblib.dump(model_objects[i], v)

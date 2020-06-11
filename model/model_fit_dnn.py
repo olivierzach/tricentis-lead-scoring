@@ -3,6 +3,7 @@ from keras import models
 from keras import layers
 from sklearn.metrics import roc_auc_score, precision_score, recall_score, confusion_matrix, classification_report
 from sklearn.model_selection import train_test_split
+import joblib
 
 # grab the complete data set
 pickle_path = './data/pickles/df_model_base.pkl'
@@ -98,3 +99,11 @@ print(classification_report(y_train, y_pred.round()))
 # save model
 save_path = './data/pickles/model_dnn_sales_accepted_1K'
 model.save(save_path)
+
+# save models
+model_names = [
+    './data/pickles/dnn_model_scaler.sav'
+]
+model_objects = [fit_train]
+for i, v in enumerate(model_names):
+    joblib.dump(model_objects[i], v)
