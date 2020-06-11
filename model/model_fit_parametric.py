@@ -52,21 +52,6 @@ num_cols = [c for c in model_features if not np.isin(model_features[c].dropna().
 # scale the test and training set
 x_train_scaled, x_test_scaled, fit_train = scale_variables(x_train, x_test, scale_cols=num_cols)
 
-# determine which network features are important to engagement score
-plt.rcParams['figure.figsize'] = (12, 8)
-df_vimp, df_impt, oob_score = extra_trees_vimp(
-    y=df_model[model_target_name],
-    df=model_features,
-    threshold=0.001,
-    plot=True,
-    estimators=200,
-    depth=200,
-    split_sample=.01,
-    leaf_sample=.01,
-    transform=False
-)
-plt.show()
-
 # lasso to reduce dimension
 lasso_c = linear_model.SGDClassifier(
     loss='log',
