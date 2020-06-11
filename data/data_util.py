@@ -1,6 +1,12 @@
 import pandas as pd
 import numpy as np
 import re
+from keras import backend as K
+import tensorflow as tf
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import ExtraTreesClassifier, ExtraTreesRegressor
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 def dummy_wrapper(df, cols_to_dummy=None):
@@ -309,3 +315,152 @@ def clean_string(s):
         replace('3', 'three')
 
     return s
+
+
+def focal_loss(y_true, y_pred):
+    gamma = 2.0
+    alpha = 0.25
+    pt_1 = tf.where(tf.equal(y_true, 1), y_pred, tf.ones_like(y_pred))
+    pt_0 = tf.where(tf.equal(y_true, 0), y_pred, tf.zeros_like(y_pred))
+    return -K.sum(alpha*K.pow(1.0-pt_1, gamma)*K.log(pt_1))-K.sum((1-alpha) * K.pow(pt_0, gamma)*K.log(1.0-pt_0))
+
+
+def scale_variables(train, test, scale_cols):
+    """
+    Applies StandardScalar() learned on the training dataset to the training and test data frames
+    Applying the learned scalar on train to the test frames helps avoid information leakage
+    Parameters
+    ----------
+    train : training data frame of features
+    test : testing data frame of features
+    scale_cols : list of columns we want to scale helpful to avoid scaling binary flags
+    Returns
+    -------
+    DataFrame : scaled training and test set data frames
+    fit object: StandardScaler() fit object to use for future predictions
+    """
+
+    selector = StandardScaler()
+
+    # subset train and test into scale columns and not scale columns
+    df_scale_train = train[scale_cols]
+    df_scale_test = test[scale_cols]
+    df_not_scale_train = train.drop(scale_cols, axis=1)
+    df_not_scale_test = test.drop(scale_cols, axis=1)
+
+    # scale the train set
+    df_scaled_train = pd.DataFrame(
+        selector.fit_transform(df_scale_train),
+        columns=df_scale_train.columns,
+        index=df_scale_train.index
+    )
+
+    # scale the test set using scaler fit on test
+    df_scaled_test = pd.DataFrame(
+        selector.transform(df_scale_test),
+        columns=df_scale_test.columns,
+        index=df_scale_test.index
+    )
+
+    # combined scaled and non-scaled back together
+    df_train_complete = pd.concat([df_not_scale_train, df_scaled_train], axis=1)
+    df_test_complete = pd.concat([df_not_scale_test, df_scaled_test], axis=1)
+
+    return (
+        df_train_complete,
+        df_test_complete,
+        selector.fit(train)
+    )
+
+def extra_trees_vimp(
+        df,
+        y,
+        threshold=.01,
+        plot=True,
+        estimators=100,
+        depth=3,
+        split_sample=.05,
+        leaf_sample=.05,
+        transform=True
+):
+
+    print('Building Trees...')
+
+    x_vars = df
+    y_vars = y
+
+    # flow control for regression or classification
+    regression_type = y_vars.drop_duplicates()
+
+    if len(regression_type) == 2:
+
+        print('Building Classification Trees...')
+
+        model = ExtraTreesClassifier(
+            n_estimators=estimators,
+            max_depth=depth,
+            random_state=444,
+            min_samples_split=split_sample,
+            min_samples_leaf=leaf_sample,
+            class_weight='balanced_subsample',
+            max_features='log2',
+            bootstrap=True,
+            oob_score=True
+            )
+
+        model.fit(x_vars, np.asarray(y_vars).ravel())
+
+        importance = model.feature_importances_
+
+        df = pd.DataFrame(importance)
+        df = df.T
+        df.columns = x_vars.columns
+        df = df.T.reset_index()
+        df.columns = ['variable', 'tree_vimp']
+        df = df.sort_values('tree_vimp', ascending=False)
+
+    else:
+
+        if transform:
+            y_vars = np.sqrt(y_vars)
+
+        print('Building Regression Trees...')
+
+        model = ExtraTreesRegressor(
+            n_estimators=estimators,
+            max_depth=depth,
+            random_state=444,
+            min_samples_split=split_sample,
+            min_samples_leaf=leaf_sample,
+            max_features='log2',
+            bootstrap=True,
+            oob_score=True
+            )
+        model.fit(x_vars, np.asarray(y_vars).ravel())
+
+        importance = model.feature_importances_
+
+        df = pd.DataFrame(importance)
+        df = df.T
+        df.columns = x_vars.columns
+        df = df.T.reset_index()
+        df.columns = ['variable', 'tree_vimp']
+        df = df.sort_values('tree_vimp', ascending=False)
+
+    if plot:
+        plt.figure()
+        sns.barplot(
+            x='tree_vimp',
+            y='variable',
+            data=df[df.tree_vimp >= threshold],
+            palette='Blues_r',
+        ).set_title(y.name)
+
+    # extract the best tree importance results
+    df = df[df.tree_vimp >= threshold]
+    important_cols = list(df.variable)
+
+    print('Tree Models Complete')
+
+    return df, important_cols, model.oob_score_
+
