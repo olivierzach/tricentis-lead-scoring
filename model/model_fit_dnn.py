@@ -33,7 +33,7 @@ model_features = df_model.drop(model_target_name, axis=1)
 model_target = df_model[model_target_name].values
 
 # kill columns near zero variance
-model_features = variance_threshold(model_features, .05)
+# model_features = variance_threshold(model_features, .05)
 
 # cross validation splits
 x_train, x_test, y_train, y_test = train_test_split(
@@ -57,12 +57,12 @@ x_train_scaled, x_test_scaled, fit_train = scale_variables(x_train, x_test, scal
 
 # define our model
 model = models.Sequential()
-model.add(layers.Dense(10000, activation='relu', input_shape=(x_train.shape[1], ), kernel_initializer='he_uniform'))
-model.add(layers.Dense(2000, activation='relu'))
-model.add(layers.Dense(2000, activation='relu'))
-model.add(layers.Dense(2000, activation='relu'))
-model.add(layers.Dense(2000, activation='relu'))
-model.add(layers.Dense(1000, activation='relu'))
+model.add(layers.Dense(1000, activation='relu', input_shape=(x_train.shape[1], ), kernel_initializer='he_uniform'))
+model.add(layers.Dense(200, activation='relu'))
+model.add(layers.Dense(200, activation='relu'))
+model.add(layers.Dense(200, activation='relu'))
+model.add(layers.Dense(200, activation='relu'))
+model.add(layers.Dense(100, activation='relu'))
 model.add(layers.Dense(1, activation='sigmoid'))
 
 # choosing a loss function and an optimizer
@@ -78,8 +78,8 @@ weights = {0: 1, 1: 90}
 fit = model.fit(
     x_train_scaled,
     y_train,
-    epochs=20,
-    batch_size=300,
+    epochs=10,
+    batch_size=512,
     class_weight=weights
 )
 
@@ -97,7 +97,7 @@ print(confusion_matrix(y_train, y_pred.round()))
 print(classification_report(y_train, y_pred.round()))
 
 # save model
-save_path = './data/pickles/model_dnn_sales_accepted_1K'
+save_path = './data/pickles/model_dnn_sales_accepted_1K_190'
 model.save(save_path)
 
 # save models

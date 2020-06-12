@@ -55,9 +55,8 @@ x_train_scaled, x_test_scaled, fit_train = scale_variables(x_train, x_test, scal
 # lasso to reduce dimension
 lasso_c = linear_model.SGDClassifier(
     loss='log',
-    penalty='elasticnet',
-    l1_ratio=.2,
-    alpha=.05,
+    penalty='l1',
+    alpha=.04,
     fit_intercept=True,
     shuffle=True,
     class_weight={0: 1, 1: 100},
@@ -99,7 +98,7 @@ least_squares = linear_model.LogisticRegression(
     penalty='none',
     fit_intercept=True,
     class_weight={0: 1, 1: 100},
-    max_iter=2000
+    max_iter=5000
 )
 
 # fit and extract
