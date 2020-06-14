@@ -46,7 +46,7 @@ num_cols = [c for c in model_features if not np.isin(model_features[c].dropna().
 # scale the test and training set
 x_train_scaled, x_test_scaled, fit_train = scale_variables(x_train, x_test, scale_cols=num_cols)
 
-# lasso to reduce dimension
+# initialize the model
 forest_c = ExtraTreesClassifier(
     n_estimators=200,
     criterion='entropy',
