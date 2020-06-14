@@ -62,12 +62,13 @@ forest_c = ExtraTreesClassifier(
     max_samples=5000,
     ccp_alpha=.1
 )
+
 # fit and extract
 forest_fit = forest_c.fit(x_train_scaled, y_train)
 print(f"MODEL SCORE: {forest_fit.score(x_train_scaled, y_train)}")
 print(f"MODEL OOB SCORE: {forest_fit.oob_score_}")
 
-# cross validate the lasso
+# cross validate the forest
 forest_cv_metrics_dict = cross_validate(
     forest_fit,
     X=x_train_scaled,
@@ -155,14 +156,18 @@ sns.barplot(
 plt.show()
 
 # set up grid search
-# TODO: try precision-recall curve in opt loop
-weights = np.linspace(1, 100, 20).astype(int)
+weights = np.linspace(90, 120, 10).astype(int)
+weights = [5, 10, 90, 97, 100, 104, 110]
 opt = GridSearchCV(
     forest_c,
-    {"class_weight": [{0: 1, 1: x} for x in weights]},
+    {
+        "class_weight": [{0: 1, 1: x} for x in weights],
+        "ccp_alpha": [.1, .01, 1],
+        "criterion": ['gini', 'entropy']
+    },
     cv=3,
-    scoring='neg_log_loss',
-    verbose=10,
+    scoring='f1_macro',
+    verbose=1,
     n_jobs=-1
 )
 
@@ -171,7 +176,7 @@ rf_opt_fit = opt.fit(x_train_scaled, y_train)
 print(f"BEST PARAMETERS: {rf_opt_fit.best_params_}")
 
 # save models
-model_names = ['./data/pickles/extra_trees_model.sav', './data/pickles/extra_trees_scaler.sav']
+model_names = ['./data/pickles/rf_model.sav', './data/pickles/rf_scaler.sav']
 model_objects = [forest_c, fit_train]
 for i, v in enumerate(model_names):
     joblib.dump(model_objects[i], v)
