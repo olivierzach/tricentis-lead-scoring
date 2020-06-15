@@ -85,20 +85,21 @@ gbm_cv_metrics_dict = cross_validate(
 prob_predictions = model_gbm_fit.predict_proba(x_train_scaled)[:, 1]
 
 # examine distribution and key moments
-sns.kdeplot(prob_predictions)
+sns.kdeplot(prob_predictions).set_title('GBM Model: Predictions Distribution')
 plt.show()
 
 # key moments of the distribution
 percentiles = [1, 25, 50, 75, 90, 99]
 prob_predictions_percentiles = np.percentile(prob_predictions, percentiles)
 
+# key percentiles of predictions
 for i in prob_predictions_percentiles:
     count_ = np.sum(np.where(prob_predictions > i, 1, 0))
     share_ = np.mean(np.where(prob_predictions > i, 1, 0))
     print(f"PERCENTILE {i}: {count_} COUNT, {share_} SHARE")
 
 # find the optimal threshold values
-possible_thresholds = np.linspace(start=0, stop=.2, num=10000)
+possible_thresholds = np.linspace(start=0, stop=.2, num=1000)
 score_dict = {}
 for i in possible_thresholds:
     y_pred = np.where(prob_predictions > i, 1, 0)
@@ -122,11 +123,11 @@ sns.lineplot(
     data=score_df_plot,
     hue='variable'
 ).set_title('GBM Model: Classification Threshold Analysis')
-plt.axvline(.063166, linestyle='--', color='grey')
+plt.axvline(.07162, linestyle='--', color='grey')
 plt.show()
 
 # evaluate model
-classification_threshold = .033166
+classification_threshold = .03
 y_pred = np.where(prob_predictions > classification_threshold, 1, 0)
 roc_score = roc_auc_score(y_train, y_pred)
 recall_score_ = recall_score(y_train, y_pred.round())
@@ -138,6 +139,24 @@ print(f"RECALL SCORE: {recall_score_}")
 print(f"PRECISION SCORE: {precision_score_}")
 print(confusion_matrix(y_train, y_pred.round()))
 print(classification_report(y_train, y_pred.round()))
+
+# analyze the feature importance
+importance = model_gbm.feature_importances_
+df_vi = pd.DataFrame(importance)
+df_vi = df_vi.T
+df_vi.columns = x_train_scaled.columns
+df_vi = df_vi.T.reset_index()
+df_vi.columns = ['variable', 'tree_vimp']
+df_vi = df_vi.sort_values('tree_vimp', ascending=False)
+
+plt.rcParams['figure.figsize'] = (12, 8)
+sns.barplot(
+    x='tree_vimp',
+    y='variable',
+    data=df_vi[df_vi.tree_vimp >= .01],
+    palette='Blues_r',
+).set_title('Tree Based Model: Feature Importance for Sales Acceptance')
+plt.show()
 
 # save models
 model_names = [
