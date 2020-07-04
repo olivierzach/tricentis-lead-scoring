@@ -6,8 +6,9 @@ https://www.tricentis.com/
 
 Project midterm report and final are included in the `references` directory. 
 
-  - Final Report: `Capstone Final Report.pdf`
-  - Midterm Report: `progress_report.pdf`
+  - Final Report: `Capstone Final Report.pdf` https://github.com/olivierzach/tricentis_lead_scoring/blob/master/references/Capstone%20Final%20Report.pdf
+  
+  - Midterm Report: `progress_report.pdf`: https://github.com/olivierzach/tricentis_lead_scoring/blob/master/references/progress_report.pdf
 
 
 # Project Goals
