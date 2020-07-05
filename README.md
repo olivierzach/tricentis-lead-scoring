@@ -2,7 +2,7 @@
 
 Complete repositiory for the Georgia Tech Capstone Project hosted by Tricentis - a modern DevOps and test driven development solutions company. 
 
-https://www.tricentis.com/
+[Tricentis](https://www.tricentis.com/)
 
 Project midterm report and final are included in the `references` directory. 
 
