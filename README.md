@@ -6,9 +6,9 @@ https://www.tricentis.com/
 
 Project midterm report and final are included in the `references` directory. 
 
-  - Final Report: `Capstone Final Report.pdf` https://github.com/olivierzach/tricentis_lead_scoring/blob/master/references/Capstone%20Final%20Report.pdf
+  - [Capstone Final Report](` https://github.com/olivierzach/tricentis_lead_scoring/blob/master/references/Capstone%20Final%20Report.pdf)
   
-  - Midterm Report: `progress_report.pdf`: https://github.com/olivierzach/tricentis_lead_scoring/blob/master/references/progress_report.pdf
+  - [Capstone Midterm Report](`progress_report.pdf`: https://github.com/olivierzach/tricentis_lead_scoring/blob/master/references/progress_report.pdf)
 
 
 # Project Goals
@@ -119,6 +119,3 @@ Insights are available from all steps of the modeling process, not just the fina
   - **Use lead scores to grow qualified lead form fills - high scored web visits with no form fill should be heavily retargeted**
   - Attributes driven segmentation of URLs, Content, including deeper NLP analysis to group these dynamic featuring into future-proof buckets, helps ensure success of model and future model efforts
   - **Host the final model developed here to filter leads to the sales team: model performance shows the final model best balances the costs of sending too many leads versus holding out strong leads**
-
-
-
