@@ -1,4 +1,4 @@
-# Tricentis - Lead Scoring Project
+# Tricentis Lead Scoring Project
 
 Complete repositiory for the Georgia Tech Capstone Project hosted by Tricentis - a modern DevOps and test driven development solutions company. 
 
