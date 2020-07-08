@@ -6,7 +6,7 @@ Complete repositiory for the Georgia Tech Capstone Project hosted by Tricentis -
 
 Project midterm report and final are included in the `references` directory. 
 
-  - [Capstone Final Report](https://github.com/olivierzach/tricentis_lead_scoring/blob/master/references/Capstone%20Final%20Report.pdf)
+  - [Capstone Final Report](https://github.com/olivierzach/tricentis_lead_scoring/blob/master/references/capstone_final_report.pdf)
   
   - [Capstone Midterm Report](https://github.com/olivierzach/tricentis_lead_scoring/blob/master/references/progress_report.pdf)
 
