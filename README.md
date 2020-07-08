@@ -13,7 +13,7 @@ Project midterm report and final are included in the `references` directory.
 
 # Project Goals
 
-Goal of this project is to develop a machine learning system that scores leads likelihood to convert based on interations within the marketing-sales funnel. Model scores determine which leads are passed through to the sales team to to start a product engagement. 
+Goal of this project is to develop a machine learning system that scores leads likelihood to convert based on interactions within the marketing-sales funnel. Model scores determine which leads are passed through to the sales team to to start a product engagement. 
 
 Solution solves key business problems:
   - Filter out bad leads that take up sales resources, saving time and effort to focus on best leads
