@@ -3,7 +3,6 @@ from sklearn.model_selection import train_test_split, cross_validate
 from sklearn.metrics import roc_auc_score, precision_score, recall_score, confusion_matrix, classification_report
 import joblib
 from sklearn.ensemble import GradientBoostingClassifier
-import skopt
 
 # grab the complete data set
 pickle_path = './data/pickles/df_model_base.pkl'
@@ -160,10 +159,16 @@ plt.show()
 
 # save models
 model_names = [
-    './data/pickles/gbm_model.sav',
-    './data/pickles/gbm_scaler.sav',
-    './data/pickles/gbm_classification_threshold.sav'
+    # './data/pickles/gbm_model.sav',
+    # './data/pickles/gbm_scaler.sav',
+    # './data/pickles/gbm_classification_threshold.sav',
+    './data/pickles/gbm_model_features.sav'
 ]
-model_objects = [model_gbm, fit_train, classification_threshold]
+model_objects = [
+    # model_gbm,
+    # fit_train,
+    # classification_threshold,
+    model_features.columns
+]
 for i, v in enumerate(model_names):
     joblib.dump(model_objects[i], v)
