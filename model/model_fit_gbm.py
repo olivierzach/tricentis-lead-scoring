@@ -45,7 +45,11 @@ x_train, x_test, y_train, y_test = train_test_split(
 num_cols = [c for c in model_features if not np.isin(model_features[c].dropna().unique(), [-1, 0, 1]).all()]
 
 # scale the test and training set
-x_train_scaled, x_test_scaled, fit_train = scale_variables(x_train, x_test, scale_cols=num_cols)
+x_train_scaled, x_test_scaled, fit_train = scale_variables(
+    x_train,
+    x_test,
+    scale_cols=num_cols
+)
 
 # initialize the gbm classifier
 model_gbm = GradientBoostingClassifier(
@@ -159,16 +163,26 @@ plt.show()
 
 # save models
 model_names = [
-    # './data/pickles/gbm_model.sav',
-    # './data/pickles/gbm_scaler.sav',
-    # './data/pickles/gbm_classification_threshold.sav',
-    './data/pickles/gbm_model_features.sav'
+    './data/pickles/gbm_model.sav',
+    './data/pickles/gbm_scaler.sav',
+    './data/pickles/gbm_classification_threshold.sav',
+    './data/pickles/gbm_model_feature_names.sav',
+    './data/pickles/gbm_model_x_train.sav',
+    './data/pickles/gbm_model_x_test.sav',
+    './data/pickles/gbm_model_y_train.sav',
+    './data/pickles/gbm_model_y_test.sav',
+
+
 ]
 model_objects = [
-    # model_gbm,
-    # fit_train,
-    # classification_threshold,
-    model_features.columns
+    model_gbm,
+    fit_train,
+    classification_threshold,
+    model_features.columns,
+    x_train,
+    x_test,
+    y_train,
+    y_test
 ]
 for i, v in enumerate(model_names):
     joblib.dump(model_objects[i], v)
