@@ -101,9 +101,7 @@ save_path = './data/pickles/model_dnn_sales_accepted_1K_190'
 model.save(save_path)
 
 # save models
-model_names = [
-    './data/pickles/dnn_model_scaler.sav'
-]
+model_names = ['./data/pickles/dnn_model_scaler.sav']
 model_objects = [fit_train]
 for i, v in enumerate(model_names):
     joblib.dump(model_objects[i], v)
