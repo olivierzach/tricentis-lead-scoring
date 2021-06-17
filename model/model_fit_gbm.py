@@ -170,10 +170,9 @@ model_names = [
     './data/pickles/gbm_model_x_train.sav',
     './data/pickles/gbm_model_x_test.sav',
     './data/pickles/gbm_model_y_train.sav',
-    './data/pickles/gbm_model_y_test.sav',
-
-
+    './data/pickles/gbm_model_y_test.sav'
 ]
+
 model_objects = [
     model_gbm,
     fit_train,
@@ -184,5 +183,6 @@ model_objects = [
     y_train,
     y_test
 ]
+
 for i, v in enumerate(model_names):
     joblib.dump(model_objects[i], v)
