@@ -1,6 +1,6 @@
 # Tricentis Lead Scoring Project
 
-Complete repositiory for the Georgia Tech Capstone Project hosted by Tricentis - a modern DevOps and test driven development solutions company. 
+Complete repository for the Georgia Tech Capstone Project hosted by Tricentis - a modern DevOps and test-driven development solutions company. 
 
 [Tricentis](https://www.tricentis.com/)
 
@@ -13,7 +13,7 @@ Project midterm report and final are included in the `references` directory.
 
 # Project Goals
 
-Goal of this project is to develop a machine learning system that scores leads likelihood to convert based on interactions within the marketing-sales funnel. Model scores determine which leads are passed through to the sales team to to start a product engagement. 
+Goal of this project is to develop a machine learning system that scores leads likelihood to convert based on interactions within the marketing-sales funnel. Model scores determine which leads are passed through to the sales team to start a product engagement. 
 
 Solution solves key business problems:
   - Filter out bad leads that take up sales resources, saving time and effort to focus on best leads
@@ -35,14 +35,14 @@ Final solution is an end-to-end data science project that comes together in thes
 Available data for the project includes over 1000+ variables related to the marketing-sales funnel. 
 
   - `Marketing`: data related to the marketing channel a lead originated from (i.e. Facebook, Google)
-  - `Website Touchpoints`: all iteractions with the Tricentis website including clicks, session length, form fill, content downloads, bounces etc.
+  - `Website Touchpoints`: all interactions with the Tricentis website including clicks, session length, form fill, content downloads, bounces etc.
   - `CRM Touchpoints`: retargeting campaigns, lead activity, sales status, lead segmentation
   - `Enrichment Data`: appended attributes to the lead record, includes user and business attributes
 
 Data processing steps include:
   - High cardinality categorical variable encoding
   - Categorical Variables Encoding
-  - Time Based engagement features
+  - Time-based engagement features
   - Missing Value imputation
   - Channel, URL, Content path including order of touchpoints through time (i.e. encode the customer journey through the funnel: Facebook > Demo Page > Resource Page > Free Trial > Form Fill, capturing the order of this path)
   - URL, Content segmentation to enable forward compatability of model solution using TF, TF-IDF
@@ -50,7 +50,7 @@ Data processing steps include:
   - Common join key across all data = connection the entire marketing-sales funnel data sources together
   - Handling censoring to prevent model leakage
   - Handling extremely imbalanced data (accepted sales leads ~1% of total leads)
-  - Scaling features before model experiements
+  - Scaling features before model experiments
   - Sparsity Reduction through regularization and near zero variance filters
 
 All data assets are included in the `data` directory. Here are quick descriptions:
@@ -66,9 +66,9 @@ All data assets are included in the `data` directory. Here are quick description
 
 # Model Experiments
 
-Following the `No Free Lunch` theorem mutiple models (parametric and non-parametric) were tested and evaluated for classifying leads as accepted or not accepted. 
+Following the `No Free Lunch` theorem, mutiple models (parametric and non-parametric) were tested and evaluated for classifying leads as accepted or not accepted. 
 
-All models were developed (hyperparameter tuning) and evaluated using a simple 5-fold cross validation strategy on a subset of the training data. Models were evaluated across a host of classification metrics including: `Accuracy`, `Confusion Matrix`, `Precision`, `Recall`, `F1 Score`, and `Percent Leads Predicted Accepted`. The classification threshold was analyzed at each step to optimize the tradeoff between precsision and recall by plotting these curves across threshold cutoffs. 
+All models were developed (hyperparameter tuning) and evaluated using a simple 5-fold cross validation strategy on a subset of the training data. Models were evaluated across a host of classification metrics including: `Accuracy`, `Confusion Matrix`, `Precision`, `Recall`, `F1 Score`, and `Percent Leads Predicted Accepted`. The classification threshold was analyzed at each step to optimize the tradeoff between precision and recall by plotting these curves across threshold cutoffs. 
 
 Best model chosen was then fit to a hold out dataset to confirm results. Final selected model was then trained on all available data and serialized for production. 
 
@@ -85,10 +85,10 @@ Scripts to develop and test these model available in the `model` directory.
 
 Flask template to automate the scoring process was developed and is included in the `app` directory. 
 
-Template sets up a simple API to respond to a post request with the model's probabalistic score of sales acceptance. Dockerfile available for encapsulating dependencies and hosting on a Tricentis specific platform. 
+Template sets up a simple API to respond to a post request with the model's probabilistic score of sales acceptance. Dockerfile available for encapsulating dependencies and hosting on a Tricentis specific platform. 
 
 Request route flow: 
-  - Take in and parse incoming request with lead id and precomputed features
+  - Take in and parse incoming request with lead id and pre-computed features
   - Load model assets: best model, scaler learned from training, and optimal classification threshold
   - Scale the input data
   - Predict probability scores and accepted flag based on threshold
@@ -97,7 +97,7 @@ Request route flow:
 
 # Results
 
-Of all models the best to balance precision and recall was the `Boosted Trees Model`. Other models performed well but struggled with low precision scores. Linear and Tree based models were still valuable for inference of key variables through coefficient estimates and feature importance.  
+Of all models, the best to balance precision and recall was the `Boosted Trees Model`. Other models performed well but struggled with low precision scores. Linear and Tree based models were still valuable for inference of key variables through coefficient estimates and feature importance.  
 
 Final Model Results:
   - `ROC-AUC`: .86
@@ -113,7 +113,7 @@ Final Model Results:
 Insights are available from all steps of the modeling process, not just the final model itself.
 
   - Require complete form fills to boost data collection
-  - **Randomly send leads to the floor to judge performance of incumbant model, this will allow future models to learn true relationships not just the previous model's rules**
+  - **Randomly send leads to the floor to judge performance of incumbant model, this will allow future models to learn true relationships, not just the previous model's rules**
   - Develop more custom content and website assets to engage more website visitors with actual activities, inference indicates activity matters more than enrichment qualification
   - Develop a way to collect data on "offline" leads to enable scoring - "offline" leads have no connected web activity
   - **Use lead scores to grow qualified lead form fills - high scored web visits with no form fill should be heavily retargeted**
