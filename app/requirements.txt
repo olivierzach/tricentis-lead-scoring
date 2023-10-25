@@ -5,6 +5,6 @@ joblib==1.2.0
 numpy==1.18.1
 pandas==0.25.3
 scikit-learn==0.23.1
-Werkzeug==1.0.1
+Werkzeug==3.0.1
 wrapt==1.12.1
 zipp==3.1.0
